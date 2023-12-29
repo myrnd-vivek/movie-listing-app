@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import MoviesList from "./components/MoviesList";
 import "./App.css";
+import AddMovie from "./components/AddMovie";
 
 function App() {
 	const [movies, setMovies] = useState([]);
@@ -13,7 +14,7 @@ function App() {
 			setIsLoading(true);
       setError(null);
 
-      const resp = await fetch("https://swapi.dev/api/film");
+      const resp = await fetch("https://swapi.dev/api/films");
       if(!resp.ok) {
         throw new Error("Something went wrong ....Retrying")
       }
@@ -40,6 +41,7 @@ function App() {
 
 	return (
 		<React.Fragment>
+      <AddMovie />
 			<section>
 				<button>Fetch Movies</button>
 			</section>
