@@ -1,34 +1,55 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
 
-import MoviesList from './components/MoviesList';
-import './App.css';
+import MoviesList from "./components/MoviesList";
+import "./App.css";
 
 function App() {
-  const dummyMovies = [
-    {
-      id: 1,
-      title: 'Some Dummy Movie',
-      openingText: 'This is the opening text of the movie',
-      releaseDate: '2021-05-18',
-    },
-    {
-      id: 2,
-      title: 'Some Dummy Movie 2',
-      openingText: 'This is the second opening text of the movie',
-      releaseDate: '2021-05-19',
-    },
-  ];
+	const [movies, setMovies] = useState([]);
+	const [IsLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  return (
-    <React.Fragment>
-      <section>
-        <button>Fetch Movies</button>
-      </section>
-      <section>
-        <MoviesList movies={dummyMovies} />
-      </section>
-    </React.Fragment>
-  );
+	const fetchMovieHandler = async () => {
+		try {
+			setIsLoading(true);
+      setError(null);
+
+      const resp = await fetch("https://swapi.dev/api/film");
+      if(!resp.ok) {
+        throw new Error("Something went wrong ....Retrying")
+      }
+			const { results } = await resp.json();
+			const transformedMovieData = results.map((movieData) => ({
+				id: movieData.episode_id,
+				title: movieData.title,
+				openingText: movieData.opening_crawl,
+				releaseDate: movieData.release_date,
+			}));
+
+      setMovies(transformedMovieData);
+			setIsLoading(false);
+		} catch (error) {
+      setError(error.message)
+			console.log(error.message);
+		}
+    setIsLoading(false);
+	};
+
+	useEffect(() => {
+    fetchMovieHandler();
+	}, []);
+
+	return (
+		<React.Fragment>
+			<section>
+				<button>Fetch Movies</button>
+			</section>
+			<section>
+				{IsLoading ? <p>Loading...</p> : <MoviesList movies={movies} />}
+        {!IsLoading && !movies.length && !error && <p>No movies found</p>}
+        {!IsLoading && error && <p>{error}</p>}
+			</section>
+		</React.Fragment>
+	);
 }
 
 export default App;
