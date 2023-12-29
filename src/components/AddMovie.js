@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const AddMovie = () => {
+const AddMovie = ({addMovie}) => {
 	const [movie, setMovie] = useState({
 		title: "",
 		openingText: "",
@@ -21,7 +21,7 @@ const AddMovie = () => {
 	};
 
 	const onAddMovie = () => {
-		console.log(movie);
+    addMovie({movie});
     reset();
 	};
 
